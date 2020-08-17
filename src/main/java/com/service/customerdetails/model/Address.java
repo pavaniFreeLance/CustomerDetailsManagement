@@ -1,13 +1,9 @@
 package com.service.customerdetails.model;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "addresses")
-@AllArgsConstructor
-@NoArgsConstructor
 public class Address {
 
     @Id
@@ -22,7 +18,20 @@ public class Address {
     private String country;
 
 
-    public Address(String street, String city, String state, String zipCode, String country) {
+    public Address() {
+		
+	}
+    
+	public Address(int id, String street, String city, String state, String zipCode, String country) {		
+		this.id = id;
+		this.street = street;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.country = country;
+	}
+
+	public Address(String street, String city, String state, String zipCode, String country) {
         this.street = street;
         this.city = city;
         this.state = state;

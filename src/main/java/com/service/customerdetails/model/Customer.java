@@ -1,12 +1,8 @@
 package com.service.customerdetails.model;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -30,7 +26,23 @@ public class Customer {
     @JoinColumn(name="addressid")
     private Address address;
 
-    public Customer(String firstName, String lastName, int age, Address address) {
+    
+    
+    public Customer() {
+		
+	}
+
+
+	public Customer(int id, String firstName, String lastName, int age, Address address) {		
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.address = address;
+	}
+
+
+	public Customer(String firstName, String lastName, int age, Address address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
