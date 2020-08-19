@@ -4,6 +4,8 @@ import com.service.customerdetails.model.Customer;
 import com.service.customerdetails.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +13,7 @@ import java.util.Optional;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+	private static final Logger LOGGER = LogManager.getLogger(CustomerServiceImpl.class);
     CustomerRepository customerRepository;
 
     @Autowired
