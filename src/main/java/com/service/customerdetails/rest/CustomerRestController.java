@@ -76,7 +76,7 @@ public class CustomerRestController {
         
         if(customersList == null || customersList.isEmpty()){           
                     	
-        	throw new CustomerNotFoundException("Customer not found with given first and last name "+firstName +""+ lastName);
+        	throw new CustomerNotFoundException("Customer not found with given first and last name "+firstName +" "+ lastName);
         }
         
         return new ResponseEntity<>(customersList, HttpStatus.OK);

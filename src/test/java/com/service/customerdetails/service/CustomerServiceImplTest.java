@@ -1,24 +1,25 @@
 package com.service.customerdetails.service;
 
-import com.service.customerdetails.model.Address;
-import com.service.customerdetails.model.Customer;
-import com.service.customerdetails.repository.CustomerRepository;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import com.service.customerdetails.model.Address;
+import com.service.customerdetails.model.Customer;
+import com.service.customerdetails.repository.CustomerRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CustomerServiceImplTest {

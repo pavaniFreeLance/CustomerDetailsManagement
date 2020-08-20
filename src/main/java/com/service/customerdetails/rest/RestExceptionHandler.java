@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class RestExceptionHandler {
@@ -17,6 +18,7 @@ public class RestExceptionHandler {
 	  * return ResponseEntity with ErrorResponse object as JSOn    
 	  */
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)    
 	private ResponseEntity<ErrorResponse> handleException(CustomerNotFoundException exc) {
 		
     	ErrorResponse error = new ErrorResponse();
@@ -34,6 +36,7 @@ public class RestExceptionHandler {
      * return ResponseEntity with ErrorResponse object as JSOn
      */ 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)    
 	private ResponseEntity<ErrorResponse> handleException(Exception exc) {
 				
     	ErrorResponse error = new ErrorResponse();
