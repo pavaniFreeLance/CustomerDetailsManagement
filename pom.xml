@@ -38,6 +38,7 @@
             </exclusion>
         	</exclusions>
     	 </dependency>
+    	 <!-- Dependency added to implement logging -->
     	<dependency>
        	 		<groupId>org.springframework.boot</groupId>
         		<artifactId>spring-boot-starter-log4j2</artifactId>
@@ -74,10 +75,28 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- dependency added for json to object conversion -->
 		<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-</dependency>
+    		<groupId>com.google.code.gson</groupId>
+    		<artifactId>gson</artifactId>
+		</dependency>
+		<!-- dependency added for implementing AOP  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<!-- Swagger for rest API documentation -->
+		<dependency>
+		    <groupId>io.springfox</groupId>
+    		<artifactId>springfox-swagger2</artifactId>
+    		<version>2.9.2</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>io.springfox</groupId>
+    		<artifactId>springfox-swagger-ui</artifactId>
+    		<version>2.9.2</version>    	
+		</dependency>
 		
 	</dependencies>
 
