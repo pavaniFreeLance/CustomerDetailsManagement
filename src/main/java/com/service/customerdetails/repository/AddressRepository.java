@@ -1,10 +1,12 @@
 package com.service.customerdetails.repository;
 
-import com.service.customerdetails.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.service.customerdetails.model.Address;
+
 /*
- * Repository providing CRUD DB functionalities on Address Table
+ * Repository extending JPA repository
+ * providing CRUD functionalities on Address Table
  */
-public interface AddressRepository extends JpaRepository<Address,Integer> {
+public interface AddressRepository extends JpaRepository<Address, Integer> {
 }

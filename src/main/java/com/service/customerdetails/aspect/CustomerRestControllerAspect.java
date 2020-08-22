@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import com.service.customerdetails.service.CustomerServiceImpl;
 
 /*
- * Handling before logic using Spring AOP
+ * Aspect class used for logging in RestController 
  */
 @Aspect
 @Component
 public class CustomerRestControllerAspect {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(CustomerServiceImpl.class);
 
 	/*
@@ -22,10 +22,9 @@ public class CustomerRestControllerAspect {
 	 */
 	@Before("execution(public * com.service.customerdetails.rest.CustomerRestController.*(..))")
 	public void beforeRestCallLogging() {
-		
+
 		LOGGER.info("***Rest api Called***");
-		
+
 	}
-	
-	
+
 }

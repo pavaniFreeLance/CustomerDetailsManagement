@@ -1,28 +1,45 @@
 package com.service.customerdetails.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+/*
+ * Address Entity holding address details of customer
+ */
 @Entity
 @Table(name = "addresses")
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
-    private int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private int id;
 
-    private String street;
-    private String city;
-    private String state;
-    private String zipCode;
-    private String country;
+	private String street;
 
+	private String city;
 
-    public Address() {
-		
+	private String state;
+
+	private String zipCode;
+
+	private String country;
+
+	/*
+	 * Default constructor
+	 */
+	public Address() {
+
 	}
-    
-	public Address(int id, String street, String city, String state, String zipCode, String country) {		
+
+	/*
+	 * All args constructor
+	 */
+	public Address(int id, String street, String city, String state, String zipCode, String country) {
 		this.id = id;
 		this.street = street;
 		this.city = city;
@@ -31,16 +48,20 @@ public class Address {
 		this.country = country;
 	}
 
+	/*
+	 * Constructor overloaded
+	 */
 	public Address(String street, String city, String state, String zipCode, String country) {
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.country = country;
-    }
+		this.street = street;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.country = country;
+	}
 
-    public int getId() {
-		return id;
+	// Getter and setters
+	public int getId() {
+		return this.id;
 	}
 
 	public void setId(int id) {
@@ -48,7 +69,7 @@ public class Address {
 	}
 
 	public String getStreet() {
-		return street;
+		return this.street;
 	}
 
 	public void setStreet(String street) {
@@ -56,7 +77,7 @@ public class Address {
 	}
 
 	public String getCity() {
-		return city;
+		return this.city;
 	}
 
 	public void setCity(String city) {
@@ -64,7 +85,7 @@ public class Address {
 	}
 
 	public String getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(String state) {
@@ -72,7 +93,7 @@ public class Address {
 	}
 
 	public String getZipCode() {
-		return zipCode;
+		return this.zipCode;
 	}
 
 	public void setZipCode(String zipCode) {
@@ -80,15 +101,19 @@ public class Address {
 	}
 
 	public String getCountry() {
-		return country;
+		return this.country;
 	}
 
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
+	/*
+	 * Overriding toString method
+	 */
 	@Override
-    public String toString(){
-        return "Address id:"+id+" street: "+street+" city :"+city+" state: "+state+" zipCode: "+zipCode+" country: "+country;
-    }
+	public String toString() {
+		return "Address id:" + id + " street: " + street + " city :" + city + " state: " + state + " zipCode: "
+				+ zipCode + " country: " + country;
+	}
 }
