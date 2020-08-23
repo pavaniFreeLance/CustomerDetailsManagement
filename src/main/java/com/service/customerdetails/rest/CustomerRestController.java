@@ -1,10 +1,10 @@
 package com.service.customerdetails.rest;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.service.customerdetails.model.Address;
 import com.service.customerdetails.model.Customer;
 import com.service.customerdetails.service.CustomerService;
 
@@ -66,37 +68,40 @@ public class CustomerRestController {
 	@GetMapping(CUSTOMERS_BY_ID)
 	public ResponseEntity<Customer> findCustomerById(@PathVariable @Min(1) int customerId) {
 
-		Customer customer = this.customerService.findCustomerById(customerId);
+		Optional<Customer> customer = this.customerService.findCustomerById(customerId);
 
-		if (customer == null) {
+		if (customer.isPresent()) {
+			return new ResponseEntity<>(customer.get(), HttpStatus.OK);
+		} else {
 
 			throw new CustomerNotFoundException("Customer not found with id " + customerId);
 		}
 
-		return new ResponseEntity<>(customer, HttpStatus.OK);
 	}
 
 	/*
-	 * Find all customer with given first name and last name.
+	 * Find all customer with first name and or last name
 	 * 
-	 * @path variables First name, last name
+	 * @path variables First name ,Last name
 	 * 
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@GetMapping("/customers/{firstName}/{lastName}")
-	public ResponseEntity<List<Customer>> findCustomerByName(@PathVariable("firstName") @NotBlank String firstName,
-			@PathVariable("lastName") @NotBlank String lastName) {
+	@GetMapping("/searchbyname")
+	public ResponseEntity<List<Customer>> findCustomerByFirstNameAndOrLastName(@RequestParam Optional<String> firstName,
+			@RequestParam Optional<String> lastName) {
 
-		List<Customer> customersList = this.customerService.findCustomerByFirstNameAndLastName(firstName, lastName);
+		Optional<List<Customer>> customersList = this.customerService.findCustomerByFirstNameAndOrLastName(firstName,
+				lastName);
 
-		if (customersList == null || customersList.isEmpty()) {
+		if (customersList.isPresent()) {
 
+			return new ResponseEntity<>(customersList.get(), HttpStatus.OK);
+		} else {
 			throw new CustomerNotFoundException(
 					"Customer not found with given first and last name " + firstName + " " + lastName);
 		}
 
-		return new ResponseEntity<>(customersList, HttpStatus.OK);
 	}
 
 	/*
@@ -128,22 +133,56 @@ public class CustomerRestController {
 	@PutMapping(CUSTOMERS)
 	public ResponseEntity<Customer> updateCustomer(@Valid @RequestBody Customer customerDetails) {
 
-		Customer customer = this.customerService.findCustomerById(customerDetails.getId());
+		Optional<Customer> customerOptionalObj = this.customerService.findCustomerById(customerDetails.getId());
 
-		if (customer == null) {
+		if (customerOptionalObj.isPresent()) {
+
+			Customer customer = customerOptionalObj.get();
+
+			customer.setFirstName(customerDetails.getFirstName());
+			customer.setLastName(customerDetails.getLastName());
+			customer.setAge(customerDetails.getAge());
+			customer.getAddress().setStreet(customerDetails.getAddress().getStreet());
+			customer.getAddress().setCity(customerDetails.getAddress().getCity());
+			customer.getAddress().setState(customerDetails.getAddress().getState());
+			customer.getAddress().setCountry(customerDetails.getAddress().getCountry());
+			customer.getAddress().setZipCode(customerDetails.getAddress().getZipCode());
+
+			return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.CREATED);
+		} else {
 			throw new CustomerNotFoundException("Customer not found with id " + customerDetails.getId());
 		}
+	}
 
-		customer.setFirstName(customerDetails.getFirstName());
-		customer.setLastName(customerDetails.getLastName());
-		customer.setAge(customerDetails.getAge());
-		customer.getAddress().setStreet(customerDetails.getAddress().getStreet());
-		customer.getAddress().setCity(customerDetails.getAddress().getCity());
-		customer.getAddress().setState(customerDetails.getAddress().getState());
-		customer.getAddress().setCountry(customerDetails.getAddress().getCountry());
-		customer.getAddress().setZipCode(customerDetails.getAddress().getZipCode());
+	/*
+	 * Updating existing customers living Address
+	 * 
+	 * @Request body with customer details
+	 * 
+	 * @return ResponseEntity<Customer>
+	 * 
+	 */
+	@PutMapping("/customers/{customerId}/address")
+	public ResponseEntity<Customer> updateCustomerAddress(@PathVariable int customerId,
+			@Valid @RequestBody Address addressDetails) {
 
-		return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.CREATED);
+		Optional<Customer> customerOptionalObj = this.customerService.findCustomerById(customerId);
+
+		if (customerOptionalObj.isPresent()) {
+
+			Customer customer = customerOptionalObj.get();
+
+			customer.getAddress().setStreet(addressDetails.getStreet());
+			customer.getAddress().setCity(addressDetails.getCity());
+			customer.getAddress().setState(addressDetails.getState());
+			customer.getAddress().setCountry(addressDetails.getCountry());
+			customer.getAddress().setZipCode(addressDetails.getZipCode());
+
+			return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.CREATED);
+
+		} else {
+			throw new CustomerNotFoundException("Customer not found with id " + customerId);
+		}
 	}
 
 	/*
@@ -157,16 +196,17 @@ public class CustomerRestController {
 	@DeleteMapping(CUSTOMERS_BY_ID)
 	public String deleteCustomer(@PathVariable int customerId) {
 
-		Customer customer = this.customerService.findCustomerById(customerId);
+		Optional<Customer> customer = this.customerService.findCustomerById(customerId);
 
-		if (customer == null) {
+		if (customer.isPresent()) {
 
+			this.customerService.deleteCustomerById(customerId);
+
+			return "customer with id : " + customerId + " deleted";
+
+		} else {
 			throw new CustomerNotFoundException("Customer not found with id " + customerId);
 		}
-
-		this.customerService.deleteCustomerById(customerId);
-
-		return "customer with id : " + customerId + " deleted";
 
 	}
 

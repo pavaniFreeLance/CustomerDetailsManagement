@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class CustomerRestControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private CustomerService customerService;	
+	private CustomerService customerService;
 
 	private static final String CUSTOMERSURI = "/api/customers";
 
@@ -53,7 +54,7 @@ public class CustomerRestControllerTest {
 	private static final String USER = "USER";
 
 	private static final String ADMIN = "ADMIN";
-	
+
 	private List<Customer> customerList;
 
 	private Customer customer;
@@ -92,27 +93,8 @@ public class CustomerRestControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
 
-		String resultStr = mvcResult.getResponse().getContentAsString();
-
-		Type listOfMyClassObject = new TypeToken<List<Customer>>() {
-		}.getType();
-
-		List<Customer> outputList = gson.fromJson(resultStr, listOfMyClassObject);
-
 		// verify
-		assertEquals(customerList.size(), outputList.size());
-
-		int i = 0;
-		for (Customer resultCustomer : outputList) {
-			assertEquals(customerList.get(i).getId(), resultCustomer.getId());
-			assertEquals(customerList.get(i).getFirstName(), resultCustomer.getFirstName());
-			assertEquals(customerList.get(i).getLastName(), resultCustomer.getLastName());
-			assertEquals(customerList.get(i).getAddress().getId(), resultCustomer.getAddress().getId());
-			assertEquals(customerList.get(i).getAddress().getCity(), resultCustomer.getAddress().getCity());
-			assertEquals(customerList.get(i).getAddress().getStreet(), resultCustomer.getAddress().getStreet());
-			assertEquals(customerList.get(i).getAddress().getState(), resultCustomer.getAddress().getState());
-			i++;
-		}
+		verifyReturnedCustomerList(mvcResult);
 
 	}
 
@@ -141,9 +123,11 @@ public class CustomerRestControllerTest {
 	 */
 	@WithMockUser(USER)
 	@Test
-	public void testFindCustomerByIdReturnResult() throws Exception {
+	public void testFindCustomerByIdCustomerFound() throws Exception {
 		// Setup
-		Mockito.when(customerService.findCustomerById(customer.getId())).thenReturn(customer);
+		Optional<Customer> customerOptionalObj = Optional.of(getCustomer(1));
+
+		Mockito.when(customerService.findCustomerById(customer.getId())).thenReturn(customerOptionalObj);
 
 		RequestBuilder request = MockMvcRequestBuilders.get(CUSTOMERSBYIDURI).accept(MediaType.APPLICATION_JSON);
 
@@ -154,16 +138,7 @@ public class CustomerRestControllerTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
 
 		// Verify
-		String resultStr = mvcResult.getResponse().getContentAsString();
-		Customer resultObj = gson.fromJson(resultStr, Customer.class);
-
-		assertEquals(customer.getId(), resultObj.getId());
-		assertEquals(customer.getFirstName(), resultObj.getFirstName());
-		assertEquals(customer.getLastName(), resultObj.getLastName());
-		assertEquals(customer.getAddress().getId(), resultObj.getAddress().getId());
-		assertEquals(customer.getAddress().getCity(), resultObj.getAddress().getCity());
-		assertEquals(customer.getAddress().getStreet(), resultObj.getAddress().getStreet());
-		assertEquals(customer.getAddress().getState(), resultObj.getAddress().getState());
+		verifyReturnedCustomer(mvcResult);
 
 	}
 
@@ -172,9 +147,9 @@ public class CustomerRestControllerTest {
 	 */
 	@WithMockUser(USER)
 	@Test
-	public void testFindCustomerByIdReturnNull() throws Exception {
+	public void testFindCustomerByIdCustomerNotFound() throws Exception {
 		// Setup
-		Mockito.when(customerService.findCustomerById(customer.getId())).thenReturn(null);
+		Mockito.when(customerService.findCustomerById(customer.getId())).thenReturn(Optional.ofNullable(null));
 
 		RequestBuilder request = MockMvcRequestBuilders.get("/api/customers/100").accept(MediaType.APPLICATION_JSON);
 
@@ -184,79 +159,61 @@ public class CustomerRestControllerTest {
 	}
 
 	/*
-	 * unit testing findCustomerByFirstNameAndLastName when customer found by first
-	 * name and last name
+	 * unit testing findCustomerByFirstNameAndOrLastName when customer found by
+	 * first name and last name
 	 */
 	@WithMockUser(USER)
 	@Test
-	public void testFindCustomerByNameReturnResult() throws Exception {
+	public void testfindCustomerByFirstNameAndOrLastNameCustomerFoundWithFirstNameAndLastName() throws Exception {
 		// Setup
 
-		Mockito.when(customerService.findCustomerByFirstNameAndLastName(firstName, lastName)).thenReturn(customerList);
+		Mockito.when(customerService.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(firstName),
+				Optional.ofNullable(lastName))).thenReturn(Optional.of(customerList));
 
-		RequestBuilder request = MockMvcRequestBuilders.get("/api/customers/testfirstname/testlastname")
+		RequestBuilder request = MockMvcRequestBuilders
+				.get("/api/searchbyname?firstName=" + firstName + "&&lastName=" + lastName)
 				.accept(MediaType.APPLICATION_JSON);
 
+		// perform
 		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
-
-		String resultStr = mvcResult.getResponse().getContentAsString();
-
-		Type listOfMyClassObject = new TypeToken<List<Customer>>() {
-		}.getType();
-
-		List<Customer> outputList = gson.fromJson(resultStr, listOfMyClassObject);
-
-		assertEquals(customerList.size(), outputList.size());
-
-		int i = 0;
-		for (Customer resultCustomer : outputList) {
-			assertEquals(customerList.get(i).getId(), resultCustomer.getId());
-			assertEquals(customerList.get(i).getFirstName(), resultCustomer.getFirstName());
-			assertEquals(customerList.get(i).getLastName(), resultCustomer.getLastName());
-			assertEquals(customerList.get(i).getAddress().getId(), resultCustomer.getAddress().getId());
-			assertEquals(customerList.get(i).getAddress().getCity(), resultCustomer.getAddress().getCity());
-			assertEquals(customerList.get(i).getAddress().getStreet(), resultCustomer.getAddress().getStreet());
-			assertEquals(customerList.get(i).getAddress().getState(), resultCustomer.getAddress().getState());
-			i++;
-		}
+		// Verify results
+		verifyReturnedCustomerList(mvcResult);
 
 	}
 
 	/*
-	 * unit testing findCustomerByFirstNameAndLastName when customer NOT found by
+	 * unit testing findCustomerByFirstNameAndOrLastName when customer NOT found by
 	 * first name and last name
 	 */
 
 	@WithMockUser(USER)
 	@Test
-	public void testFindCustomerByNameReturnException() throws Exception {
+	public void testfindCustomerByFirstNameAndOrLastNameCustomerNotFoundWithFirstNameAndLastName() throws Exception {
 		// Setup
 
-		Mockito.when(customerService.findCustomerByFirstNameAndLastName(firstName, lastName)).thenReturn(null);
+		Mockito.when(customerService.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(firstName),
+				Optional.ofNullable(lastName))).thenReturn(Optional.ofNullable(null));
 
-		RequestBuilder request = MockMvcRequestBuilders.get("/api/customers/testfirstname/testlastname")
+		RequestBuilder request = MockMvcRequestBuilders.get("/api/searchbyname?firstName="
+				+ Optional.ofNullable(firstName) + "&&lastName=" + Optional.ofNullable(lastName))
 				.accept(MediaType.APPLICATION_JSON);
 
+		// perform
 		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isNotFound())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
 
-		// verify
-		String resultStr = mvcResult.getResponse().getContentAsString();
-		ErrorResponse resultObj = gson.fromJson(resultStr, ErrorResponse.class);
-
-		assertEquals(404, resultObj.getStatus());
-		assertEquals("Customer not found with given first and last name " + firstName + " " + lastName,
-				resultObj.getMessage());
-
+		// verify results
+		verifyNotFound(mvcResult);
 	}
 
 	/*
-	 * Unit test for method AddCustomer. Successfully adding customer.
+	 * Unit test for method AddCustomer. Successfully adding customer with ADMIN
+	 * role
 	 */
 	@WithMockUser(roles = ADMIN)
 	@Test
@@ -283,16 +240,7 @@ public class CustomerRestControllerTest {
 		// Verify
 		verify(customerService, times(1)).save(any(Customer.class));
 
-		String resultStr = mvcResult.getResponse().getContentAsString();
-		Customer resultObj = gson.fromJson(resultStr, Customer.class);
-
-		assertEquals(customer.getId(), resultObj.getId());
-		assertEquals(customer.getFirstName(), resultObj.getFirstName());
-		assertEquals(customer.getLastName(), resultObj.getLastName());
-		assertEquals(customer.getAddress().getId(), resultObj.getAddress().getId());
-		assertEquals(customer.getAddress().getCity(), resultObj.getAddress().getCity());
-		assertEquals(customer.getAddress().getStreet(), resultObj.getAddress().getStreet());
-		assertEquals(customer.getAddress().getState(), resultObj.getAddress().getState());
+		verifyReturnedCustomer(mvcResult);
 
 	}
 
@@ -326,8 +274,7 @@ public class CustomerRestControllerTest {
 	@Test
 	public void testUpdateCustomerCustomerFound() throws Exception {
 		// Setup
-
-		Mockito.when(customerService.findCustomerById(1)).thenReturn(customer);
+		Mockito.when(customerService.findCustomerById(1)).thenReturn(Optional.of(customer));
 
 		Customer customerObj = getCustomer(1);
 		customerObj.setFirstName("changedName");
@@ -364,7 +311,7 @@ public class CustomerRestControllerTest {
 		// Setup
 		// customer object is posted
 		String jsonStr = gson.toJson(customer);
-		Mockito.when(customerService.findCustomerById(1)).thenReturn(null);
+		Mockito.when(customerService.findCustomerById(1)).thenReturn(Optional.ofNullable(null));
 
 		RequestBuilder request = MockMvcRequestBuilders.put(CUSTOMERSURI).content(jsonStr)
 				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON);
@@ -381,7 +328,6 @@ public class CustomerRestControllerTest {
 		verify(customerService, times(1)).findCustomerById(1);
 		verify(customerService, times(0)).save(any(Customer.class));
 		assertEquals(404, resultObj.getStatus());
-		assertEquals("Customer not found with id " + customer.getId(), resultObj.getMessage());
 
 	}
 
@@ -416,7 +362,7 @@ public class CustomerRestControllerTest {
 	public void testdeleteCustomerCustomerFound() throws Exception {
 		// Setup
 
-		Mockito.when(customerService.findCustomerById(1)).thenReturn(customer);
+		Mockito.when(customerService.findCustomerById(1)).thenReturn(Optional.of(customer));
 
 		// Invoking delete rest API
 		RequestBuilder request = MockMvcRequestBuilders.delete(CUSTOMERSBYIDURI)
@@ -433,6 +379,29 @@ public class CustomerRestControllerTest {
 		verify(customerService, times(1)).findCustomerById(customer.getId());
 		verify(customerService, times(1)).deleteCustomerById(customer.getId());
 		assertEquals("customer with id : " + customer.getId() + " deleted", resultStr);
+
+	}
+
+	/*
+	 * Unit test for deleteCustomer method with Admin role Customer found and
+	 * deleted successfully
+	 */
+	@WithMockUser(roles = ADMIN)
+	@Test
+	public void testdeleteCustomerCustomerNotFound() throws Exception {
+		// Setup
+		Mockito.when(customerService.findCustomerById(1)).thenReturn(Optional.ofNullable(null));
+
+		// Invoking delete rest API
+		RequestBuilder request = MockMvcRequestBuilders.delete(CUSTOMERSBYIDURI)
+				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON);
+
+		// action
+		this.mockMvc.perform(request).andExpect(status().isNotFound()).andReturn();
+
+		// Verify
+		verify(customerService, times(1)).findCustomerById(customer.getId());
+		verify(customerService, times(0)).deleteCustomerById(customer.getId());
 
 	}
 
@@ -455,12 +424,66 @@ public class CustomerRestControllerTest {
 
 	}
 
+	/*
+	 * Method to create customer object
+	 * 
+	 * @param id
+	 */
 	private Customer getCustomer(int i) {
 
+		// Creating Customer object
 		Address address = new Address(i, "irene", "vel", "brabant", "3241", "NL");
 
 		customer = new Customer(i, "testfirstname", "testlastname", 30, address);
 
 		return customer;
+	}
+
+	private void verifyReturnedCustomerList(MvcResult mvcResult) throws Exception {
+		// verify
+		String resultStr = mvcResult.getResponse().getContentAsString();
+
+		Type listOfMyClassObject = new TypeToken<List<Customer>>() {
+		}.getType();
+
+		List<Customer> outputList = gson.fromJson(resultStr, listOfMyClassObject);
+
+		assertEquals(customerList.size(), outputList.size());
+
+		int i = 0;
+		for (Customer resultCustomer : outputList) {
+			assertEquals(customerList.get(i).getId(), resultCustomer.getId());
+			assertEquals(customerList.get(i).getFirstName(), resultCustomer.getFirstName());
+			assertEquals(customerList.get(i).getLastName(), resultCustomer.getLastName());
+			assertEquals(customerList.get(i).getAddress().getId(), resultCustomer.getAddress().getId());
+			assertEquals(customerList.get(i).getAddress().getCity(), resultCustomer.getAddress().getCity());
+			assertEquals(customerList.get(i).getAddress().getStreet(), resultCustomer.getAddress().getStreet());
+			assertEquals(customerList.get(i).getAddress().getState(), resultCustomer.getAddress().getState());
+			i++;
+		}
+	}
+
+	private void verifyNotFound(MvcResult mvcResult) throws Exception {
+		// verify
+		String resultStr = mvcResult.getResponse().getContentAsString();
+		ErrorResponse resultObj = gson.fromJson(resultStr, ErrorResponse.class);
+
+		assertEquals(404, resultObj.getStatus());
+
+	}
+
+	private void verifyReturnedCustomer(MvcResult mvcResult) throws Exception {
+
+		// Verify
+		String resultStr = mvcResult.getResponse().getContentAsString();
+		Customer resultObj = gson.fromJson(resultStr, Customer.class);
+
+		assertEquals(customer.getId(), resultObj.getId());
+		assertEquals(customer.getFirstName(), resultObj.getFirstName());
+		assertEquals(customer.getLastName(), resultObj.getLastName());
+		assertEquals(customer.getAddress().getId(), resultObj.getAddress().getId());
+		assertEquals(customer.getAddress().getCity(), resultObj.getAddress().getCity());
+		assertEquals(customer.getAddress().getStreet(), resultObj.getAddress().getStreet());
+		assertEquals(customer.getAddress().getState(), resultObj.getAddress().getState());
 	}
 }

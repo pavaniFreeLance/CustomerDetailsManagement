@@ -3,8 +3,6 @@ package com.service.customerdetails.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +14,6 @@ import com.service.customerdetails.repository.CustomerRepository;
  */
 @Service
 public class CustomerServiceImpl implements CustomerService {
-
-	private static final Logger LOGGER = LogManager.getLogger(CustomerServiceImpl.class);
 
 	private CustomerRepository customerRepository;
 
@@ -47,18 +43,12 @@ public class CustomerServiceImpl implements CustomerService {
 	 * 
 	 * @return Customer
 	 */
-	public Customer findCustomerById(int customerId) {
+	public Optional<Customer> findCustomerById(int customerId) {
 
-		Optional<Customer> customerOptionalObj = this.customerRepository.findById(customerId);
-
-		Customer customer = null;
-
-		if (customerOptionalObj.isPresent()) {
-			LOGGER.info("Customer found with id " + customerId);
-			customer = customerOptionalObj.get();
-		}
+		Optional<Customer> customer = this.customerRepository.findById(customerId);
 
 		return customer;
+
 	}
 
 	/*
@@ -68,8 +58,27 @@ public class CustomerServiceImpl implements CustomerService {
 	 * 
 	 * @return list of all customers
 	 */
-	public List<Customer> findCustomerByFirstNameAndLastName(String firstName, String lastName) {
-		return this.customerRepository.findByFirstNameAndLastNameIgnoreCase(firstName, lastName);
+	public Optional<List<Customer>> findCustomerByFirstNameAndOrLastName(Optional<String> firstName,
+			Optional<String> lastName) {
+
+		Optional<List<Customer>> customersList = Optional.ofNullable(null);
+
+		if (firstName.isPresent() && lastName.isPresent()) {
+
+			customersList = this.customerRepository.findByFirstNameAndLastNameIgnoreCase(firstName.get(),
+					lastName.get());
+
+		} else if (firstName.isPresent()) {
+
+			customersList = this.customerRepository.findByFirstName(firstName.get());
+
+		} else if (lastName.isPresent()) {
+
+			customersList = this.customerRepository.findByLastName(lastName.get());
+
+		}
+
+		return customersList;
 	}
 
 	/*

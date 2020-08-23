@@ -1,6 +1,7 @@
 package com.service.customerdetails.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.service.customerdetails.model.Customer;
 
@@ -23,16 +24,17 @@ public interface CustomerService {
 	 * 
 	 * @return Customer
 	 */
-	public Customer findCustomerById(int customerId);
+	public Optional<Customer> findCustomerById(int customerId);
 
 	/*
-	 * find customer by first name and last name
+	 * find customer by first name and/Or last name
 	 * 
 	 * @param first name , last name
 	 * 
 	 * @return list of all customers
 	 */
-	public List<Customer> findCustomerByFirstNameAndLastName(String firstName, String lastName);
+	public Optional<List<Customer>> findCustomerByFirstNameAndOrLastName(Optional<String> firstName,
+			Optional<String> lastName);
 
 	/*
 	 * Save customer

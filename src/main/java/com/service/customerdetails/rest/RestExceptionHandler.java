@@ -36,7 +36,7 @@ public class RestExceptionHandler {
 	}
 
 	/*
-	 * Handle Server Exception
+	 * Handle General Exception
 	 * 
 	 * @param Exception
 	 * 
