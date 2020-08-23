@@ -36,6 +36,10 @@ public class CustomerRestController {
 	private static final String CUSTOMERS = "/customers";
 
 	private static final String CUSTOMERS_BY_ID = "/customers/{customerId}";
+	
+	private static final String SEARCHBYNAME ="/searchbyname";
+	
+	private static final String UPDATEADDRESS = "/customers/{customerId}/address";
 
 	/*
 	 * Auto wiring CustomerService
@@ -87,7 +91,7 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@GetMapping("/searchbyname")
+	@GetMapping(SEARCHBYNAME)
 	public ResponseEntity<List<Customer>> findCustomerByFirstNameAndOrLastName(@RequestParam Optional<String> firstName,
 			@RequestParam Optional<String> lastName) {
 
@@ -162,7 +166,7 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@PutMapping("/customers/{customerId}/address")
+	@PutMapping(UPDATEADDRESS)
 	public ResponseEntity<Customer> updateCustomerAddress(@PathVariable int customerId,
 			@Valid @RequestBody Address addressDetails) {
 
