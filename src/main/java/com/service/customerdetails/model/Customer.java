@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-
+import javax.validation.constraints.NotNull;
 
 /*
  * Entity class to store Customer details
@@ -24,17 +24,18 @@ public class Customer {
 	@Column(name = "id")
 	private int id;
 
-	@NotBlank(message ="first name cannot be blank")
+	@NotBlank(message = "first name cannot be blank")
 	@Column(name = "first_name")
 	private String firstName;
 
-	@NotBlank(message ="last name cannot be blank")
+	@NotBlank(message = "last name cannot be blank")
 	@Column(name = "last_name")
 	private String lastName;
 
 	@Column(name = "age")
 	private int age;
 
+	@NotNull(message = "Address should be provided")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "addressid")
 	private Address address;

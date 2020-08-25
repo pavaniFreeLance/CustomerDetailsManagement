@@ -3,18 +3,22 @@ package com.service.customerdetails.rest;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /*
  * Exception handler class
  */
+
 @ControllerAdvice
-public class RestExceptionHandler {
+public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/*
 	 * Handling Customer not found exception and returning error response
@@ -36,34 +40,16 @@ public class RestExceptionHandler {
 	}
 
 	/*
-	 * Handle General Exception
-	 * 
-	 * @param Exception
-	 * 
-	 * @return ResponseEntity with ErrorResponse object as JSOn
-	 */
-	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	private ResponseEntity<ErrorResponse> handleException(Exception exc) {
-
-		ErrorResponse error = new ErrorResponse();
-
-		error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		error.setMessage(exc.getMessage());
-
-		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	/*
 	 * Handle MethodArgumentNotValidException
 	 * 
 	 * @param MethodArgumentNotValidException
 	 * 
 	 * @return ResponseEntity with ErrorResponse object as JSOn
 	 */
-	@ExceptionHandler
+	@Override
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValid2(MethodArgumentNotValidException ex) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
 		ErrorResponse error = new ErrorResponse();
 
