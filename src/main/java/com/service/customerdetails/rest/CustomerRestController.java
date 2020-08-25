@@ -32,15 +32,6 @@ import com.service.customerdetails.service.CustomerService;
 public class CustomerRestController {
 
 	private CustomerService customerService;
-
-	private static final String CUSTOMERS = "/customers";
-
-	private static final String CUSTOMERS_BY_ID = "/customers/{customerId}";
-	
-	private static final String SEARCHBYNAME ="/searchbyname";
-	
-	private static final String UPDATEADDRESS = "/customers/{customerId}/address";
-
 	/*
 	 * Auto wiring CustomerService
 	 * 
@@ -53,15 +44,6 @@ public class CustomerRestController {
 	}
 
 	/*
-	 * Find all customers in the DB and return list in JSON format
-	 */
-	@GetMapping(CUSTOMERS)
-	public ResponseEntity<List<Customer>> findAllCustomers() {
-
-		return new ResponseEntity<>(this.customerService.findAll(), HttpStatus.OK);
-	}
-
-	/*
 	 * Find all customer with given ID and return response in JSON format
 	 * 
 	 * @path variable customerID
@@ -69,7 +51,7 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@GetMapping(CUSTOMERS_BY_ID)
+	@GetMapping(Constants.CUSTOMERS_BY_ID)
 	public ResponseEntity<Customer> findCustomerById(@PathVariable @Min(1) int customerId) {
 
 		Optional<Customer> customer = this.customerService.findCustomerById(customerId);
@@ -84,26 +66,27 @@ public class CustomerRestController {
 	}
 
 	/*
-	 * Find all customer with first name and or last name
+	 * Find all customers or Customers with first name and or last name
 	 * 
 	 * @path variables First name ,Last name
 	 * 
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@GetMapping(SEARCHBYNAME)
-	public ResponseEntity<List<Customer>> findCustomerByFirstNameAndOrLastName(@RequestParam Optional<String> firstName,
+	@GetMapping(Constants.CUSTOMERS)
+	public ResponseEntity<List<Customer>> findCustomers(@RequestParam Optional<String> firstName,
 			@RequestParam Optional<String> lastName) {
 
-		Optional<List<Customer>> customersList = this.customerService.findCustomerByFirstNameAndOrLastName(firstName,
-				lastName);
+		Optional<List<Customer>> customersList = this.customerService.findCustomers(firstName, lastName);
 
-		if (customersList.isPresent()) {
+		if (customersList.isEmpty()) {
+
+			throw new CustomerNotFoundException("Customers not found");
+
+		} else {
 
 			return new ResponseEntity<>(customersList.get(), HttpStatus.OK);
-		} else {
-			throw new CustomerNotFoundException(
-					"Customer not found with given first and last name " + firstName + " " + lastName);
+
 		}
 
 	}
@@ -116,7 +99,7 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@PostMapping(CUSTOMERS)
+	@PostMapping(Constants.CUSTOMERS)
 	public ResponseEntity<Customer> addCustomer(@Valid @RequestBody Customer customer) {
 
 		customer.setId(0);
@@ -134,7 +117,7 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@PutMapping(CUSTOMERS)
+	@PutMapping(Constants.CUSTOMERS)
 	public ResponseEntity<Customer> updateCustomer(@Valid @RequestBody Customer customerDetails) {
 
 		Optional<Customer> customerOptionalObj = this.customerService.findCustomerById(customerDetails.getId());
@@ -152,7 +135,7 @@ public class CustomerRestController {
 			customer.getAddress().setCountry(customerDetails.getAddress().getCountry());
 			customer.getAddress().setZipCode(customerDetails.getAddress().getZipCode());
 
-			return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.CREATED);
+			return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.OK);
 		} else {
 			throw new CustomerNotFoundException("Customer not found with id " + customerDetails.getId());
 		}
@@ -166,8 +149,8 @@ public class CustomerRestController {
 	 * @return ResponseEntity<Customer>
 	 * 
 	 */
-	@PutMapping(UPDATEADDRESS)
-	public ResponseEntity<Customer> updateCustomerAddress(@PathVariable int customerId,
+	@PutMapping(Constants.UPDATEADDRESS)
+	public ResponseEntity<Customer> updateCustomerAddress(@PathVariable int customerId, @PathVariable int addressId,
 			@Valid @RequestBody Address addressDetails) {
 
 		Optional<Customer> customerOptionalObj = this.customerService.findCustomerById(customerId);
@@ -176,17 +159,23 @@ public class CustomerRestController {
 
 			Customer customer = customerOptionalObj.get();
 
-			customer.getAddress().setStreet(addressDetails.getStreet());
-			customer.getAddress().setCity(addressDetails.getCity());
-			customer.getAddress().setState(addressDetails.getState());
-			customer.getAddress().setCountry(addressDetails.getCountry());
-			customer.getAddress().setZipCode(addressDetails.getZipCode());
+			if (addressId == customer.getAddress().getId()) {
 
-			return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.CREATED);
+				customer.getAddress().setStreet(addressDetails.getStreet());
+				customer.getAddress().setCity(addressDetails.getCity());
+				customer.getAddress().setState(addressDetails.getState());
+				customer.getAddress().setCountry(addressDetails.getCountry());
+				customer.getAddress().setZipCode(addressDetails.getZipCode());
+
+				return new ResponseEntity<>(this.customerService.save(customer), HttpStatus.OK);
+			} else {
+				throw new CustomerNotFoundException("Customer not found with address id " + addressId);
+			}
 
 		} else {
 			throw new CustomerNotFoundException("Customer not found with id " + customerId);
 		}
+
 	}
 
 	/*
@@ -197,7 +186,7 @@ public class CustomerRestController {
 	 * @return String
 	 * 
 	 */
-	@DeleteMapping(CUSTOMERS_BY_ID)
+	@DeleteMapping(Constants.CUSTOMERS_BY_ID)
 	public String deleteCustomer(@PathVariable int customerId) {
 
 		Optional<Customer> customer = this.customerService.findCustomerById(customerId);

@@ -28,15 +28,6 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	/*
-	 * find all customers
-	 * 
-	 * @return list of customers
-	 */
-	public List<Customer> findAll() {
-		return this.customerRepository.findAll();
-	}
-
-	/*
 	 * find customer by id
 	 * 
 	 * @param id
@@ -52,14 +43,14 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	/*
-	 * find customer by first name and last name
+	 * find customers or Customers by first name and last name or find Customers by
+	 * first name only or last name only
 	 * 
-	 * @param first name , last name
+	 * @param Optional first name , Optional last name
 	 * 
 	 * @return list of all customers
 	 */
-	public Optional<List<Customer>> findCustomerByFirstNameAndOrLastName(Optional<String> firstName,
-			Optional<String> lastName) {
+	public Optional<List<Customer>> findCustomers(Optional<String> firstName, Optional<String> lastName) {
 
 		Optional<List<Customer>> customersList = Optional.ofNullable(null);
 
@@ -76,6 +67,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 			customersList = this.customerRepository.findByLastName(lastName.get());
 
+		} else {
+
+			customersList = Optional.ofNullable(this.customerRepository.findAll());
 		}
 
 		return customersList;

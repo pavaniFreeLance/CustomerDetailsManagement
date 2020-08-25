@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -75,49 +74,7 @@ public class CustomerRestControllerTest {
 
 		lastName = "testlastname";
 	}
-
-	/*
-	 * Unit testing findAll method
-	 * 
-	 */
-	@WithMockUser(USER)
-	@Test
-	public void testFindAllCustomersResultReturned() throws Exception {
-		// set up
-		Mockito.when(customerService.findAll()).thenReturn(customerList);
-		RequestBuilder request = MockMvcRequestBuilders.get(CUSTOMERSURI).accept(MediaType.APPLICATION_JSON);
-
-		// when
-		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
-				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
-
-		// verify
-		verifyReturnedCustomerList(mvcResult);
-
-	}
-
-	/*
-	 * Test findAll method. When empty list is the result, asserting response sent
-	 */
-	@WithMockUser(USER)
-	@Test
-	public void testFindAllCustomersResultEmptyList() throws Exception {
-		// set up
-		List<Customer> emptyList = new ArrayList<Customer>();
-		Mockito.when(customerService.findAll()).thenReturn(emptyList);
-
-		RequestBuilder request = MockMvcRequestBuilders.get(CUSTOMERSURI).accept(MediaType.APPLICATION_JSON);
-
-		// when
-		this.mockMvc.perform(request).andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
-				.andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty()).andReturn();
-
-	}
-
+	
 	/*
 	 * Test findCustomerByID when customer found with given ID
 	 */
@@ -159,19 +116,19 @@ public class CustomerRestControllerTest {
 	}
 
 	/*
-	 * unit testing findCustomerByFirstNameAndOrLastName when customer found by
+	 * unit testing findCustomers when customer found by
 	 * first name and last name
 	 */
 	@WithMockUser(USER)
 	@Test
-	public void testfindCustomerByFirstNameAndOrLastNameCustomerFoundWithFirstNameAndLastName() throws Exception {
+	public void testfindCustomersCustomerFoundWithFirstNameAndLastName() throws Exception {
 		// Setup
 
-		Mockito.when(customerService.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(firstName),
+		Mockito.when(customerService.findCustomers(Optional.ofNullable(firstName),
 				Optional.ofNullable(lastName))).thenReturn(Optional.of(customerList));
 
 		RequestBuilder request = MockMvcRequestBuilders
-				.get("/api/searchbyname?firstName=" + firstName + "&&lastName=" + lastName)
+				.get("/api/customers?firstName=" + firstName + "&&lastName=" + lastName)
 				.accept(MediaType.APPLICATION_JSON);
 
 		// perform
@@ -185,7 +142,7 @@ public class CustomerRestControllerTest {
 	}
 
 	/*
-	 * unit testing findCustomerByFirstNameAndOrLastName when customer NOT found by
+	 * unit testing findCustomers when customer NOT found by
 	 * first name and last name
 	 */
 
@@ -194,16 +151,15 @@ public class CustomerRestControllerTest {
 	public void testfindCustomerByFirstNameAndOrLastNameCustomerNotFoundWithFirstNameAndLastName() throws Exception {
 		// Setup
 
-		Mockito.when(customerService.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(firstName),
+		Mockito.when(customerService.findCustomers(Optional.ofNullable(firstName),
 				Optional.ofNullable(lastName))).thenReturn(Optional.ofNullable(null));
 
-		RequestBuilder request = MockMvcRequestBuilders.get("/api/searchbyname?firstName="
+		RequestBuilder request = MockMvcRequestBuilders.get("/api/customers?firstName="
 				+ Optional.ofNullable(firstName) + "&&lastName=" + Optional.ofNullable(lastName))
 				.accept(MediaType.APPLICATION_JSON);
 
 		// perform
-		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isNotFound())
-				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isNotFound())				
 				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
 
@@ -220,7 +176,7 @@ public class CustomerRestControllerTest {
 	public void testAddCustomer() throws Exception {
 
 		// Setup
-		// get the customer object with id equals to 0
+		// Creating the customer object with id equals to 0
 		Customer customerObj = getCustomer(0);
 
 		String jsonStr = gson.toJson(customerObj);
@@ -286,7 +242,7 @@ public class CustomerRestControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON);
 
 		// action
-		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isCreated())
+		MvcResult mvcResult = this.mockMvc.perform(request).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").exists())
 				.andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty()).andReturn();
 
@@ -352,8 +308,8 @@ public class CustomerRestControllerTest {
 		verify(customerService, times(0)).save(any(Customer.class));
 
 	}
-
-	/*
+	
+		/*
 	 * Unit test for deleteCustomer method with Admin role Customer found and
 	 * deleted successfully
 	 */
@@ -439,6 +395,11 @@ public class CustomerRestControllerTest {
 		return customer;
 	}
 
+	/*
+	 * Method to verify rest API returned object
+	 * @param mvcResult
+	 * @throws Exception
+	 */
 	private void verifyReturnedCustomerList(MvcResult mvcResult) throws Exception {
 		// verify
 		String resultStr = mvcResult.getResponse().getContentAsString();
@@ -463,6 +424,12 @@ public class CustomerRestControllerTest {
 		}
 	}
 
+	/*
+	 * Verify result of Rest API perform when Error response
+	 * is returned
+	 * @mvcResult
+	 * @throws Exception
+	 */
 	private void verifyNotFound(MvcResult mvcResult) throws Exception {
 		// verify
 		String resultStr = mvcResult.getResponse().getContentAsString();
@@ -472,6 +439,11 @@ public class CustomerRestControllerTest {
 
 	}
 
+	/*
+	 * Verify Result object returned by perform on rest API
+	 * @mvcResult
+	 * @throws Exception
+	 */
 	private void verifyReturnedCustomer(MvcResult mvcResult) throws Exception {
 
 		// Verify
