@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG">
+<Configuration status="INFO">
 	<Properties>
 		<Property name="LOG_PATTERN">%d{YYYY-MM-dd'T'HH:mm:ss.SSSZ} %5p %3tid [%l]
 			%m%n</Property>
@@ -24,11 +24,11 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="com.service.customerdetails" level="DEBUG"
+		<Logger name="com.service.customerdetails" level="INFO"
 			additivity="false">
 			<AppenderRef ref="LogInfoToRollingFile" />
 		</Logger>
-		<Root level="Debug">
+		<Root level="INFO">
 			<AppenderRef ref="LogInfoToRollingFile" />
 			<AppenderRef ref="LogToConsole" />
 		</Root>
