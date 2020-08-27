@@ -49,25 +49,6 @@ public class CustomerServiceImplTest {
 	}
 
 	/*
-	 * Test link for findAll() of CustomerService
-	 */
-	@Test
-	public void findAllTest() {
-		// set up
-		List<Customer> customerList = new ArrayList<Customer>();
-		customerList.add(customer);
-		Mockito.when(customerRepository.findAll()).thenReturn(customerList);
-
-		// when
-		List<Customer> resultList = customerService.findAll();
-
-		// verify results
-		verify(customerRepository, times(1)).findAll();
-		assertEquals(1, resultList.size());
-
-	}
-
-	/*
 	 * Test link for findCustomerById() of CustomerService
 	 */
 	@Test
@@ -106,7 +87,7 @@ public class CustomerServiceImplTest {
 	 * name and last name values present
 	 */
 	@Test
-	public void findCustomerByFirstNameAndLastNameTest_CustomerPresent() {
+	public void findCustomersTest_CustomerPresent() {
 		// setup
 		List<Customer> customerList = new ArrayList<Customer>();
 		customerList.add(customer);
@@ -114,7 +95,7 @@ public class CustomerServiceImplTest {
 				customer.getLastName())).thenReturn(Optional.of(customerList));
 
 		// when
-		Optional<List<Customer>> resultCustomerList = customerService.findCustomerByFirstNameAndOrLastName(
+		Optional<List<Customer>> resultCustomerList = customerService.findCustomers(
 				Optional.of(customer.getFirstName()), Optional.of(customer.getLastName()));
 
 		// verify
@@ -130,7 +111,7 @@ public class CustomerServiceImplTest {
 	 * name value is present and last name value is not.
 	 */
 	@Test
-	public void findCustomerByFirstNameAndLastNameTest_OnlyFirstNamePresent() {
+	public void findCustomersTest_OnlyFirstNamePresent() {
 		// setup
 		List<Customer> customerList = new ArrayList<Customer>();
 		customerList.add(customer);
@@ -138,7 +119,7 @@ public class CustomerServiceImplTest {
 
 		// when
 		Optional<List<Customer>> resultCustomerList = customerService
-				.findCustomerByFirstNameAndOrLastName(Optional.of(customer.getFirstName()), Optional.ofNullable(null));
+				.findCustomers(Optional.of(customer.getFirstName()), Optional.ofNullable(null));
 
 		// verify
 		verify(customerRepository, times(0)).findByFirstNameAndLastNameIgnoreCase(any(String.class), any(String.class));
@@ -150,11 +131,11 @@ public class CustomerServiceImplTest {
 	}
 
 	/*
-	 * Test link for findByFirstNameAndLastNameIgnoreCase() of CustomerService last
+	 * Test link for findCustomers of CustomerService last
 	 * name value is present and first name value is not.
 	 */
 	@Test
-	public void findCustomerByFirstNameAndLastNameTest_OnlyLastNamePresent() {
+	public void findCustomersTest_OnlyLastNamePresent() {
 		// setup
 		List<Customer> customerList = new ArrayList<Customer>();
 		customerList.add(customer);
@@ -162,7 +143,7 @@ public class CustomerServiceImplTest {
 
 		// when
 		Optional<List<Customer>> resultCustomerList = customerService
-				.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(null), Optional.of(customer.getLastName()));
+				.findCustomers(Optional.ofNullable(null), Optional.of(customer.getLastName()));
 
 		// verify
 		verify(customerRepository, times(0)).findByFirstNameAndLastNameIgnoreCase(any(String.class), any(String.class));
@@ -179,18 +160,26 @@ public class CustomerServiceImplTest {
 	 * First and last name values are not present and Null is returned.
 	 */
 	@Test
-	public void findCustomerByFirstNameAndLastNameTest_BothFirstAndLastNameNotPresent() {
+	public void findCustomersTest_BothFirstAndLastNameNotPresent() {
 
-		// when
+		//set up
+		List<Customer> customerList = new ArrayList<Customer>();
+		customerList.add(customer);
+		Mockito.when(customerRepository.findAll()).thenReturn(customerList);
+		
+		// perform
 		Optional<List<Customer>> resultCustomerList = customerService
-				.findCustomerByFirstNameAndOrLastName(Optional.ofNullable(null), Optional.ofNullable(null));
+				.findCustomers(Optional.ofNullable(null), Optional.ofNullable(null));
 
 		// verify
 		verify(customerRepository, times(0)).findByFirstNameAndLastNameIgnoreCase(any(String.class), any(String.class));
 		verify(customerRepository, times(0)).findByFirstName(any(String.class));
 		verify(customerRepository, times(0)).findByLastName(any(String.class));
+		verify(customerRepository, times(1)).findAll();
 
-		assertTrue(resultCustomerList.isEmpty());
+		assertTrue(resultCustomerList.isPresent());
+		assertEquals(1, resultCustomerList.get().size());
+		
 
 	}
 
@@ -206,7 +195,7 @@ public class CustomerServiceImplTest {
 		Mockito.when(customerRepository.save(customerToSave)).thenReturn(customer);
 
 		// when
-		Customer resultObj = customerService.save(customerToSave);
+		Customer resultObj = customerService.saveCustomer(customerToSave);
 
 		// verify results
 		verify(customerRepository, times(1)).save(customerToSave);

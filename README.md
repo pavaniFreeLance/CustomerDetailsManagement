@@ -23,9 +23,13 @@
 	*Using Spring Aspect for logging rest API.
 	*Exception Handling using Customization. 
 	*Spring Security.
+	*Actuator used for health check and info.
 
 ###  Swagger URL 
 	http://localhost:8080/swagger-ui.html
+	
+### Actuator
+	http://localhost:8080/actuator
 
 ### URL's invoked from browser
 

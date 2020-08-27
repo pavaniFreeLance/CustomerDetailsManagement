@@ -1,23 +1,12 @@
-package com.service.customerdetails.model;
+package com.service.customerdetails.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /*
- * Address Entity holding address details of customer
+ * Address DTO holding address details of customer
  */
-@Entity
-@Table(name = "addresses")
-public class Address {
+public class AddressDto {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 
 	@NotNull(message = "Provide Street name")
@@ -34,18 +23,15 @@ public class Address {
 
 	@NotNull(message = "Provide country name")
 	private String country;
-
-	/*
-	 * Default constructor
-	 */
-	public Address() {
-
+	
+	public AddressDto() {
+		super();
 	}
 
 	/*
 	 * All args constructor
 	 */
-	public Address(int id, String street, String city, String state, String zipCode, String country) {
+	public AddressDto(int id, String street, String city, String state, String zipCode, String country) {
 		this.id = id;
 		this.street = street;
 		this.city = city;
@@ -57,7 +43,7 @@ public class Address {
 	/*
 	 * Constructor overloaded
 	 */
-	public Address(String street, String city, String state, String zipCode, String country) {
+	public AddressDto(String street, String city, String state, String zipCode, String country) {
 		this.street = street;
 		this.city = city;
 		this.state = state;

@@ -28,15 +28,6 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	/*
-	 * find all customers
-	 * 
-	 * @return list of customers
-	 */
-	public List<Customer> findAll() {
-		return this.customerRepository.findAll();
-	}
-
-	/*
 	 * find customer by id
 	 * 
 	 * @param id
@@ -45,23 +36,24 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	public Optional<Customer> findCustomerById(int customerId) {
 
-		Optional<Customer> customer = this.customerRepository.findById(customerId);
+		Optional<Customer> resultCustomer = this.customerRepository.findById(customerId);
 
-		return customer;
+		return resultCustomer;
 
 	}
 
 	/*
-	 * find customer by first name and last name
+	 * find Customers by first name and last name (or)
+	 * find Customers by first name only (or) last name only (or)
+	 * Find all customers in case no first name and last name provided.	 * 
 	 * 
-	 * @param first name , last name
+	 * @param Optional first name , Optional last name
 	 * 
-	 * @return list of all customers
+	 * @return Optional list of all customersDto
 	 */
-	public Optional<List<Customer>> findCustomerByFirstNameAndOrLastName(Optional<String> firstName,
-			Optional<String> lastName) {
+	public Optional<List<Customer>> findCustomers(Optional<String> firstName, Optional<String> lastName) {
 
-		Optional<List<Customer>> customersList = Optional.ofNullable(null);
+		Optional<List<Customer>> customersList;
 
 		if (firstName.isPresent() && lastName.isPresent()) {
 
@@ -76,6 +68,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 			customersList = this.customerRepository.findByLastName(lastName.get());
 
+		} else {
+
+			customersList = Optional.ofNullable(this.customerRepository.findAll());
 		}
 
 		return customersList;
@@ -88,7 +83,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 * 
 	 * @return customer object saved
 	 */
-	public Customer save(Customer customer) {
+	public Customer saveCustomer(Customer customer) {
 
 		return this.customerRepository.save(customer);
 	}
@@ -102,6 +97,6 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	public void deleteCustomerById(int customerId) {
 		this.customerRepository.deleteById(customerId);
-	}
+	}	
 
 }

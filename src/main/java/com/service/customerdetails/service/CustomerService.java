@@ -11,13 +11,6 @@ import com.service.customerdetails.model.Customer;
 public interface CustomerService {
 
 	/*
-	 * find all customers
-	 * 
-	 * @return list of customers
-	 */
-	public List<Customer> findAll();
-
-	/*
 	 * find customer by id
 	 * 
 	 * @param id
@@ -27,14 +20,13 @@ public interface CustomerService {
 	public Optional<Customer> findCustomerById(int customerId);
 
 	/*
-	 * find customer by first name and/Or last name
+	 * find all customers or by first name and/Or last name
 	 * 
-	 * @param first name , last name
+	 * @param optional first name , optional last name
 	 * 
 	 * @return list of all customers
 	 */
-	public Optional<List<Customer>> findCustomerByFirstNameAndOrLastName(Optional<String> firstName,
-			Optional<String> lastName);
+	public Optional<List<Customer>> findCustomers(Optional<String> firstName, Optional<String> lastName);
 
 	/*
 	 * Save customer
@@ -43,7 +35,7 @@ public interface CustomerService {
 	 * 
 	 * @return customer object saved
 	 */
-	public Customer save(Customer customer);
+	public Customer saveCustomer(Customer customer);
 
 	/*
 	 * delete customer by ID

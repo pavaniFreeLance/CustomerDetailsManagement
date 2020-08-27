@@ -6,11 +6,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import com.service.customerdetails.rest.ApplicationConstants;
+
 /*
  * Basic Spring security configuration class extending WebSecurityConfigurerAdapter
  */
 @Configuration
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/*
 	 * Swagger related URI
@@ -27,8 +29,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
 		// In memory authentication
-		auth.inMemoryAuthentication().withUser("user").password("{noop}psw").roles("USER").and().withUser("Admin")
-				.password("{noop}psw").roles("USER", "ADMIN");
+		auth.inMemoryAuthentication().withUser("user").password("{noop}psw").roles(ApplicationConstants.ROLE_USER).and().withUser("Admin")
+		.password("{noop}psw").roles(ApplicationConstants.ROLE_USER, ApplicationConstants.ROLE_ADMIN);
 
 	}
 
@@ -41,9 +43,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.httpBasic().and().authorizeRequests().antMatchers(AUTH_LIST).authenticated()
-				.antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER,ADMIN").antMatchers(HttpMethod.POST, "/api/*")
-				.hasRole("ADMIN").antMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN").and().csrf().disable().formLogin();
+		.antMatchers(HttpMethod.GET, ApplicationConstants.URI_MATCHER).hasAnyRole(ApplicationConstants.ROLE_USER, ApplicationConstants.ROLE_ADMIN).antMatchers(HttpMethod.POST, ApplicationConstants.URI_MATCHER)
+		.hasRole(ApplicationConstants.ROLE_ADMIN).antMatchers(HttpMethod.PUT, ApplicationConstants.URI_MATCHER).hasRole(ApplicationConstants.ROLE_ADMIN)
+		.antMatchers(HttpMethod.DELETE, ApplicationConstants.URI_MATCHER).hasRole(ApplicationConstants.ROLE_ADMIN).anyRequest().authenticated().and().csrf()
+		.disable().formLogin();
+
 	}
 
 }
