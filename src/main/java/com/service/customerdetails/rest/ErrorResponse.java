@@ -23,8 +23,7 @@ public class ErrorResponse {
 	 * 
 	 * @param status, message
 	 */
-	public ErrorResponse(int status, String message) {
-		super();
+	public ErrorResponse(int status, String message) {		
 		this.status = status;
 		this.message = message;
 	}
@@ -34,8 +33,7 @@ public class ErrorResponse {
 	 * 
 	 * @param status, message,details
 	 */
-	public ErrorResponse(int status, String message, List<String> details) {
-		super();
+	public ErrorResponse(int status, String message, List<String> details) {		
 		this.status = status;
 		this.message = message;
 		this.details = details;
