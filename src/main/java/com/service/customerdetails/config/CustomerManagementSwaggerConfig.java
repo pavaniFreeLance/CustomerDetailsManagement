@@ -17,13 +17,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * Configuring and enabling Swagger and Swagger UI */
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig {
+public class CustomerManagementSwaggerConfig {
 
+	private final String BASE_PACKAGE = "com.service.customerdetails.rest";
 	/*Creating Docket*/
 	@Bean
 	public Docket swaggerApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select().paths(PathSelectors.any())
-				.apis(RequestHandlerSelectors.basePackage("com.service.customerdetails.rest")).build()
+				.apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE)).build()
 				.apiInfo(this.metaData());
 	}
 
@@ -31,9 +32,9 @@ public class SwaggerConfig {
 	 * Setting Meta data in swagger 
 	 */
 	private ApiInfo metaData() {
-		ApiInfo apiInfo = new ApiInfo("My REST API", "Rest API for Managing Customer Information", "1.0", "Free to use",
-				new Contact("Pavani", "URL not availbale", "Pavani.Bandi@gmail.com"), "API Licence",
-				"URL not available", Collections.emptyList());
-		return apiInfo;
+		return new ApiInfo("Customer Management", "Rest API for Managing Customer Information", "1.0", "Free to use",
+				new Contact("Pavani", "URL", "Pavani.Bandi@gmail.com"), "API Licence",
+				"URL", Collections.emptyList());
+
 	}
 }
