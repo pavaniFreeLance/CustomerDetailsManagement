@@ -1,75 +1,55 @@
-package com.service.customerdetails.model;
+package com.service.customerdetails.dto;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 /*
- * Entity class to store Customer details
+ * DTO Class to store Customer details
  */
-@Entity
-@Table(name = "customers")
-public class Customer {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+public class CustomerDto {
+
 	private int id;
 
 	@NotBlank(message = "first name cannot be blank")
-	@Column(name = "first_name")
 	private String firstName;
 
-	@NotBlank(message = "last name cannot be blank")
-	@Column(name = "last_name")
+	@NotBlank(message = "last name cannot be blank")	
 	private String lastName;
 
 	@Positive(message = "Age should be positive number")
-	@Column(name = "age")
 	private int age;
 
 	@Valid
 	@NotNull(message = "Address should be provided")
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "addressid")
-	private Address address;
+	private AddressDto addressDto;
 
-	/*
-	 * Default constructor
-	 */
-	public Customer() {
 
+	public CustomerDto() {
+		super();
 	}
 
 	/*
 	 * All args constructor
 	 */
-	public Customer(int id, String firstName, String lastName, int age, Address address) {
+	public CustomerDto(int id, String firstName, String lastName, int age, AddressDto addressDto) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.age = age;
-		this.address = address;
+		this.addressDto = addressDto;
 	}
 
 	/*
 	 * Constructor overloaded
 	 */
-	public Customer(String firstName, String lastName, int age, Address address) {
+	public CustomerDto(String firstName, String lastName, int age, AddressDto addressDto) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.age = age;
-		this.address = address;
+		this.addressDto = addressDto;
 	}
 
 	// Getters and Setters
@@ -106,12 +86,12 @@ public class Customer {
 		this.age = age;
 	}
 
-	public Address getAddress() {
-		return this.address;
+	public AddressDto getAddressDto() {
+		return addressDto;
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddressDto(AddressDto addressDto) {
+		this.addressDto = addressDto;
 	}
 
 	/*
