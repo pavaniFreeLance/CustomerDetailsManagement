@@ -35,7 +35,7 @@ public interface CustomerService {
 	 * 
 	 * @return customer object saved
 	 */
-	public Customer save(Customer customer);
+	public Customer saveCustomer(Customer customer);
 
 	/*
 	 * delete customer by ID

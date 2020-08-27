@@ -195,7 +195,7 @@ public class CustomerServiceImplTest {
 		Mockito.when(customerRepository.save(customerToSave)).thenReturn(customer);
 
 		// when
-		Customer resultObj = customerService.save(customerToSave);
+		Customer resultObj = customerService.saveCustomer(customerToSave);
 
 		// verify results
 		verify(customerRepository, times(1)).save(customerToSave);
